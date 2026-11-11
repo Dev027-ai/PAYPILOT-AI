@@ -1,0 +1,688 @@
+# MASTER PROMPT: BUILD PAYPILOT AI FROM ZERO TO A HACKATHON-READY FINTECH PRODUCT
+
+## ROLE AND EXPECTATIONS
+
+Act as a principal full-stack fintech engineer, AI agent architect, payment integration specialist, security engineer, product designer, and QA lead with the depth of experience expected from an engineer who has spent 18 years building complex financial software.
+
+You are responsible for delivering a coherent, fully functional product, not merely generating code or a UI prototype.
+
+Use official documentation, current SDKs, strong engineering practices, a thoughtful product strategy, and independent verification.
+
+Inspect the current Replit workspace first. Preserve useful existing work, if any. If the workspace is empty, build from scratch.
+
+Do not stop after creating a plan or landing page. Implement the application, run it, test it, debug it, and document any remaining blockers honestly.
+
+## 1. PROJECT IDENTITY
+
+Working name: **PayPilot AI**
+
+Tagline: **Your money, understood.**
+
+Product description:
+
+PayPilot AI is an AI-powered payment and financial intelligence workspace that lets users express payment-related intentions in natural language, interact with available PayPal services, understand transaction activity, explore spending patterns, and complete supported purchases through a secure PayPal Sandbox checkout.
+
+The AI must do more than generate conversational text. It should interpret intent, retrieve trustworthy data, call constrained tools, explain results, prepare actions, and coordinate supported payment workflows.
+
+This is an independent hackathon project. Do not imply that it is an official PayPal application or that PayPal endorses it.
+
+Keep the product completely separate from all medical, dental-tourism, and unrelated projects.
+
+## 2. HACKATHON REQUIREMENTS
+
+Build specifically for the PayPal AI Hackathon.
+
+Official challenge:
+https://paypalaihackathon.devpost.com/
+
+Official rules:
+https://paypalaihackathon.devpost.com/rules
+
+Official resources:
+https://paypalaihackathon.devpost.com/resources
+
+Mandatory objectives:
+1. Meaningfully integrate the PayPal Developer Platform using the free Sandbox environment.
+2. Meaningfully integrate an AI model, agent, or AI platform.
+3. Deliver a running, interactive prototype.
+4. Demonstrate a genuine end-to-end product workflow.
+5. Provide clear documentation, setup instructions, and a public source repository.
+6. Prepare the application so it can be tested consistently on its intended platform.
+
+Optimize the implementation for technological depth, design, impact, innovation, and presentation.
+
+Target the main PayPal + AI and agentic-commerce award categories where the working implementation supports them. Consider AG Grid's sponsor prize as an additional opportunity.
+
+No feature or prize is guaranteed by implementing a particular technology.
+
+## 3. THE PRODUCT'S FIVE CORE AI CAPABILITIES
+
+Implement one shared AI agent with five integrated capabilities.
+
+### A. AI PAYMENT AGENT
+
+Create a conversational interface that understands payment-related user requests.
+
+Example prompts:
+- "Show my latest available PayPal transactions."
+- "Explain this payment."
+- "Summarize my recent account activity."
+- "How much was received this month?"
+- "Help me prepare a checkout."
+- "Calculate an international currency estimate."
+- "Compare this period with the previous period."
+
+Use the official PayPal Agent Toolkit or remote MCP integration for supported payment and merchant data operations where practical.
+
+Consult:
+https://developer.paypal.com/ai-tools/toolkit/
+https://developer.paypal.com/ai-tools/mcp-server/
+https://developer.paypal.com/ai-tools/agent-tools/
+
+Use the actual tools supported by the chosen integration, such as transaction lookup, merchant insights, order lookup, or product-catalog operations where authorized.
+
+Do not assume every tool is available for every account, permission, or environment.
+
+The assistant must:
+- Identify the user's intent.
+- Retrieve relevant information through permitted tools.
+- Return understandable explanations.
+- Include relevant source, period, currency, and data scope.
+- Ask for clarification when necessary.
+- Handle tool errors gracefully.
+- Never invent transaction details or claim an action succeeded before verification.
+
+### B. AI CHECKOUT AGENT — THE MAIN DEMONSTRATION
+
+This is the primary end-to-end workflow.
+
+Build a small, attractive, self-contained demonstration storefront with a curated, original product catalog.
+
+A user should be able to type:
+
+"I need a wireless keyboard under $75. Find the best option and help me purchase it."
+
+The agent should:
+
+1. Understand the request and budget.
+2. Search the application's trusted catalog.
+3. Compare actual product attributes, price, and availability.
+4. Recommend a suitable option and explain its choice.
+5. Display a product card with the actual catalog price.
+6. Prepare the cart.
+7. Show the complete order summary and currency.
+8. Validate the total on the server.
+9. Ask the user to review and proceed.
+10. Create a genuine PayPal Sandbox order.
+11. Launch PayPal's supported buyer-approval checkout.
+12. Capture the approved order on the server.
+13. Verify the capture response.
+14. Display the confirmed payment reference.
+15. Save the order and verified payment status.
+16. Refresh the order and transaction views.
+
+Use current PayPal-supported checkout packages and APIs. Prefer the official React SDK v6 and server SDK, following the current guide:
+https://developer.paypal.com/guides/nextjs-checkout
+
+Suggested packages to verify against the current official documentation:
+- `@paypal/react-paypal-js`
+- `@paypal/paypal-server-sdk`
+
+Important restrictions:
+- The demonstration storefront is our own explicitly labelled Sandbox store.
+- Never claim an external retailer order has been purchased merely because an external product was found.
+- Never treat an AI response, frontend callback, redirect, or order-approval screen alone as proof of completed payment.
+- Never let the model manipulate the final payable amount.
+- Use server-controlled catalog pricing, order validation, and verified capture results.
+- Never execute a payment without a clear user-controlled approval step.
+
+The goal is to demonstrate a genuine, working purchase workflow instead of an AI recommendation that goes nowhere.
+
+### C. AI TRANSACTION INTELLIGENCE
+
+Build a transaction intelligence workspace.
+
+Features:
+- Search available transactions.
+- Filter by date, amount, currency, merchant, and status where the underlying records support those fields.
+- Open an individual transaction.
+- Explain the recorded payment in plain language.
+- Summarize recent activity.
+- Identify patterns in the actual available dataset.
+- Explain the difference between a payment record, an order, and a completed capture.
+
+Example:
+
+"What is this $49.99 payment?"
+
+The agent should retrieve the relevant record and explain its recorded details.
+
+Use PayPal's supported transaction/order tools where authorized. Use the application's persistent database for records created by the application.
+
+If broader account history is not available through the configured credentials, display that limitation clearly.
+
+Do not pretend that application credentials provide unrestricted access to every user's personal PayPal account.
+
+### D. AI SPENDING INTELLIGENCE
+
+Build a high-quality financial analytics workspace.
+
+Features:
+- Date-range selection.
+- Monthly and weekly comparisons.
+- Category-level analysis where purchase information supports categorization.
+- Merchant-level summaries.
+- Largest transactions.
+- Spending trends.
+- Clear financial metrics and interactive charts.
+- Natural-language questions about the available records.
+
+Example:
+
+"Show my spending by category this month and compare it with last month."
+
+The backend must calculate totals and comparisons deterministically. AI should explain those calculations, not invent numbers.
+
+Handle currencies separately unless an authorized exchange-rate source provides the necessary conversion.
+
+Clearly label:
+- Connected PayPal account data.
+- Transactions recorded by PayPilot AI.
+- Seeded demo data.
+
+If the accessible PayPal account is merchant-oriented, present its available incoming payments, transaction activity, or revenue insights accurately. Do not mislabel merchant receipts as personal spending.
+
+#### AG GRID STUDIO INTEGRATION
+
+Make AG Grid Studio the selected sponsor-tool extension if the necessary trial access can be obtained.
+
+Official resources:
+https://www.ag-grid.com/studio/react/quick-start/
+https://www.ag-grid.com/studio/react/custom-widgets/
+https://www.ag-grid.com/studio/react/ai-agents/
+
+Use Studio to create an analytics dashboard with custom widgets, consistent theming, and the Studio Agent Framework where supported.
+
+A natural-language instruction such as:
+
+"Show me weekly payment activity and compare it with the previous month."
+
+should cause the analytics agent to query permitted data and create, update, or select a relevant dashboard view or widget.
+
+The integration must be genuine, not merely a static AG Grid table with a sponsor name attached.
+
+Obtain and configure any required trial license according to official instructions.
+
+If access cannot be obtained, keep the standard analytics dashboard functional and document the missing sponsor integration. Do not fake AG Grid Studio capabilities or claim sponsor-prize eligibility without meaningful use.
+
+### E. AI INTERNATIONAL PAYMENT ASSISTANT
+
+Provide a transparent international payment estimation interface.
+
+Example:
+
+"If I convert $500 to INR, approximately how much would that be?"
+
+Support:
+- Source amount and currency.
+- Destination currency.
+- Verified exchange-rate lookup.
+- Rate source and timestamp.
+- Estimated converted amount.
+- Available, verified applicable fees.
+- Estimated recipient amount only when the required data supports the calculation.
+- Clear explanation of assumptions.
+
+Use a reliable external exchange-rate service behind a replaceable provider adapter.
+
+If live rates are unavailable, use an explicitly labelled demonstration rate.
+
+Do not invent exchange rates, current PayPal fees, transfer eligibility, delivery times, or a guaranteed recipient amount.
+
+Distinguish three concepts:
+1. Indicative currency conversion.
+2. An actual quote returned by a supported service.
+3. An executable payment or remittance transaction.
+
+A conversion calculation is not proof that PayPal supports sending money through that route.
+
+Do not implement an unsupported peer-to-peer transfer by pretending that a checkout order is an international remittance.
+
+If the required data is unavailable, explain the limitation in the UI.
+
+## 4. PAYPAL AGENT TOOLKIT AND MCP
+
+Investigate and integrate PayPal's official agent capabilities.
+
+Begin with:
+https://developer.paypal.com/ai-tools/get-started
+https://developer.paypal.com/ai-tools/toolkit/
+https://developer.paypal.com/ai-tools/mcp-server/
+https://developer.paypal.com/ai-tools/build-with-llm/
+https://developer.paypal.com/ai-tools/agent-tools/
+
+Read the actual tool catalog before implementing any tool call.
+
+Preferred architecture:
+- Use the PayPal Agent Toolkit or MCP for appropriate supported agent operations.
+- Use the current supported PayPal server SDK and JavaScript SDK v6 for the buyer-approved checkout.
+- Keep financial business logic and payment validation in trusted server-side services.
+- Use the AI agent to orchestrate permitted services, rather than giving the model unrestricted access to the system.
+
+The agent may use supported tools for actions such as:
+- Listing available transactions.
+- Retrieving merchant analytics.
+- Retrieving order details.
+- Searching or listing supported product-catalog records.
+- Preparing an order.
+- Accessing other documented functionality that genuinely fits the user experience.
+
+The model must not have arbitrary API, database, shell, or network access.
+
+If the remote MCP server cannot be integrated reliably into the deployed application, implement the supported direct API/SDK equivalent for the essential workflow. Clearly document which features use MCP, the Agent Toolkit, or direct APIs.
+
+Do not claim that MCP is connected unless the connection and at least one real tool operation have been tested.
+
+### IMPORTANT LIMITATION
+
+PayPal documents additional remote MCP commerce tools for product search, cart creation, and checkout that currently apply to gift cards. Do not assume those tools implement universal checkout for unrelated third-party retailers.
+
+For our general demonstration storefront, use the standard PayPal checkout integration and our own server-controlled catalog. Add other product sources only if they can be integrated truthfully and meaningfully.
+
+## 5. PAYMENT RECEIVING AND MERCHANT CONFIGURATION
+
+Configure the project for the correct Sandbox payment-receiving account.
+
+Required setup documentation must explain:
+
+- PayPal Developer Dashboard.
+- Sandbox REST application credentials.
+- Sandbox Business/merchant account.
+- Sandbox buyer/test account.
+- Expected receiving merchant ID, if available.
+- OAuth and access-token handling.
+- Checkout approval and capture.
+- Webhook registration and verification.
+- Sandbox environment selection.
+
+Use environment variables such as:
+
+`PAYPAL_ENVIRONMENT=sandbox`
+
+`PAYPAL_CLIENT_ID=`
+
+`PAYPAL_CLIENT_SECRET=`
+
+`PAYPAL_MERCHANT_ID=`
+
+`PAYPAL_WEBHOOK_ID=`
+
+`OPENAI_API_KEY=`
+
+`OPENAI_MODEL=`
+
+`DATABASE_URL=`
+
+`SESSION_SECRET=`
+
+`AG_GRID_STUDIO_ENABLED=false`
+
+`AG_GRID_LICENSE_KEY=`
+
+`FX_PROVIDER_API_KEY=`
+
+Adapt the names to the actual SDK and provider configuration.
+
+The client ID and client secret are application credentials, not interchangeable with a receiving account. Configure the intended Sandbox merchant account separately and verify that successful captures go to the expected recipient.
+
+Never expose the client secret in browser code, frontend bundles, client-visible errors, or logs.
+
+Implement:
+- Server-side token handling.
+- Server-side order creation and capture.
+- Order ownership and amount validation.
+- Correct currency handling.
+- Duplicate-request protection.
+- Idempotency where supported.
+- Webhook signature verification.
+- Duplicate webhook-event protection.
+- Clear payment states.
+- Proper handling of cancelled, declined, pending, and failed payments.
+
+A missing webhook configuration must not be represented as a verified webhook integration.
+
+Prefer direct server-side verification of the authoritative PayPal order/capture state where appropriate.
+
+## 6. TECHNICAL ARCHITECTURE
+
+Use a modern TypeScript-first application.
+
+Preferred stack:
+- Next.js 16 App Router.
+- React and TypeScript.
+- Tailwind CSS.
+- An accessible, reusable component library.
+- PostgreSQL with Drizzle ORM or another sound relational setup.
+- PayPal JavaScript SDK v6.
+- PayPal server SDK.
+- PayPal Agent Toolkit/MCP for appropriate AI operations.
+- OpenAI or another appropriately supported LLM provider.
+- AG Grid Studio for the sponsor dashboard extension.
+- Vitest for unit/integration tests.
+- A suitable browser end-to-end testing framework.
+
+Use stable, compatible package versions verified against current documentation.
+
+Do not introduce microservices or unnecessary infrastructure unless a real technical requirement justifies them.
+
+Organize the code into clear modules:
+- Application pages and UI components.
+- Authentication and authorization.
+- AI provider and orchestration.
+- Validated agent tools.
+- PayPal services.
+- Product catalog and cart.
+- Order and transaction services.
+- Analytics.
+- FX provider.
+- Database models and migrations.
+- Webhooks.
+- Configuration validation.
+- Logging and errors.
+- Automated tests.
+
+Use server components and server-side actions or route handlers where suitable. Webhooks must use a real server endpoint.
+
+Maintain a replaceable AI and FX provider abstraction.
+
+## 7. AI TOOL SAFETY AND ACCURACY
+
+Build one central assistant with typed, validated tools.
+
+Suggested tool interfaces:
+- `searchAvailableTransactions`
+- `getTransactionDetails`
+- `getOrderStatus`
+- `getMerchantInsights`
+- `calculateSpendingSummary`
+- `compareSpendingPeriods`
+- `searchDemoCatalog`
+- `prepareCheckout`
+- `getVerifiedExchangeRate`
+- `calculateCurrencyEstimate`
+
+Implement only tools for which a real backing service exists.
+
+Rules:
+- Validate every argument.
+- Enforce data ownership and authorization.
+- Use structured outputs.
+- Apply timeouts and handle failures.
+- Limit tool access to the minimum required.
+- Do not allow free-form model-generated amounts to bypass server-side validation.
+- Do not let the model directly alter verified payment states.
+- Do not reveal other users' data or sensitive configuration.
+- Ask for explicit confirmation before initiating a consequential financial action.
+- Require normal PayPal buyer approval for the purchase flow.
+- Confirm results from the authoritative API before reporting success.
+
+The LLM may interpret requests and explain evidence. Deterministic services must calculate money, validate orders, and control payment state.
+
+Provide a clearly labelled fallback/demo mode if the LLM service is not configured. Never present fallback responses as genuine LLM output.
+
+## 8. PREMIUM USER EXPERIENCE
+
+Build a complete, responsive fintech workspace with its own professional visual identity.
+
+Visual direction:
+- Refined navy and neutral surfaces.
+- Restrained blue accents.
+- Excellent typography.
+- Clear spacing and hierarchy.
+- Meaningful financial number formatting.
+- Accessible contrast.
+- Consistent components and subtle motion.
+- Full desktop and mobile support.
+
+Avoid a generic template or a dashboard made entirely of oversized cards.
+
+### Main navigation
+
+1. Overview.
+2. AI Payment Agent.
+3. Checkout.
+4. Transactions.
+5. Spending Intelligence.
+6. International Payments.
+7. Settings and Integrations.
+
+### Overview dashboard
+
+Show:
+- Available, verified account activity.
+- Recent transactions.
+- Spending or account insights appropriate to the data source.
+- Trend charts.
+- Useful shortcuts.
+- AI-generated observations backed by actual calculations.
+- Clear Sandbox/live-environment status.
+
+### Assistant workspace
+
+Include:
+- Conversation history.
+- Suggested prompts.
+- Message streaming or progress indicators where available.
+- Clear tool activity.
+- Structured transaction and product cards.
+- Expandable evidence/source details.
+- Checkout summaries.
+- Explicit approval before financial action.
+- Retry and recovery.
+- Accessible keyboard navigation.
+
+### Transactions
+
+Include working search and filters, status indicators, date formatting, amount alignment, pagination, and accessible details views.
+
+### International payments
+
+Include currency selection, rate timestamps, transparent calculations, fee assumptions, limitations, and a clear distinction between an estimate and a real supported payment.
+
+### Integrations/settings
+
+Display connection status without exposing secrets. Explain exactly how to configure missing AI, PayPal, database, or AG Grid credentials.
+
+Every visible control must do what its label promises.
+
+## 9. DATABASE AND DATA SOURCES
+
+Use a persistent database with migrations and constraints.
+
+Suggested tables:
+- users
+- sessions
+- transactions
+- products
+- orders
+- payment_attempts
+- webhook_events
+- conversation_threads
+- conversation_messages
+- spending_insights
+- exchange_rate_quotes
+- audit_events
+
+Adapt the schema to the implementation.
+
+Rules:
+- Use proper ownership relationships.
+- Store internal IDs separately from PayPal IDs.
+- Represent amounts with integer minor units or a suitable exact decimal representation.
+- Store currency codes explicitly.
+- Use constraints for uniqueness and payment idempotency.
+- Keep AI history scoped to the correct user.
+- Store only data necessary for the application.
+- Do not store card numbers, CVVs, PayPal passwords, or raw payment credentials.
+- Clearly distinguish provider records from application-created and seeded demo records.
+- Use synthetic data only when it is explicitly marked as demo data.
+
+Do not pretend that seeded transactions were fetched from a real connected PayPal account.
+
+## 10. SECURITY AND RELIABILITY
+
+Implement secure authentication and session handling appropriate for the hosted demo.
+
+Include:
+- Server-side authorization.
+- Secure password hashing if passwords are used.
+- HTTP-only cookies and appropriate production cookie settings.
+- CSRF protection where applicable.
+- Rate limiting.
+- Strict request validation.
+- Security headers.
+- Restrictive CORS.
+- Safe error handling.
+- Secret management through Replit Secrets/environment variables.
+- Dependency review.
+- Sensitive-value redaction in logs.
+- No committed credentials.
+- No accidental public exposure of private data.
+
+If production security, regulatory approval, or additional PayPal permissions remain necessary, document them instead of claiming certification or production readiness.
+
+## 11. AUTOMATED TESTING
+
+Write tests for:
+- Money arithmetic.
+- Currency precision.
+- Date-range calculations.
+- Spending summaries.
+- Period comparisons.
+- Data authorization.
+- AI tool validation.
+- Fallback behavior.
+- Product and amount validation.
+- Order creation.
+- Duplicate submissions.
+- Checkout cancellation.
+- Capture verification.
+- Payment-state transitions.
+- Webhook signature validation.
+- Duplicate webhook events.
+- FX calculations and rate timestamps.
+- Integration failure handling.
+
+Add an end-to-end test for the core journey.
+
+Mock external APIs only in isolated tests. Do not count mocked tests as proof of a real PayPal Sandbox payment.
+
+Run the build, lint, type checks, and automated tests. Fix the actual errors before declaring the project complete.
+
+## 12. REPEATABLE HACKATHON DEMO
+
+Create a reliable demo path that judges can repeat.
+
+The primary journey:
+
+1. Open the application dashboard.
+2. Ask the AI assistant to summarize the available transaction activity.
+3. View an actual returned transaction or clearly labelled demo example.
+4. Ask for a spending trend and see the analytics update.
+5. Request an international conversion estimate.
+6. Ask the agent to find a product in the demo catalog.
+7. Review and approve the proposed cart.
+8. Complete the real PayPal Sandbox buyer-approval flow.
+9. Verify the server-side capture result.
+10. Show the confirmed transaction/order reference.
+11. Return to the dashboard and verify that the application state updates correctly.
+
+Include:
+- Predictable seed data.
+- An obvious Sandbox indicator.
+- A demo reset option.
+- Useful example prompts.
+- A clear missing-credentials screen.
+- A test guide that explains how to configure buyer and merchant Sandbox accounts.
+
+Do not call an order completed unless the actual PayPal response confirms the capture.
+
+## 13. PUBLIC REPOSITORY AND VIDEO REQUIREMENTS
+
+Prepare the application for submission.
+
+The repository must be public and open source with an appropriate license file visible at the repository root and in the repository's license/about metadata as required by the submission instructions.
+
+Include:
+- Complete source code.
+- Installation instructions.
+- Environment-variable reference.
+- Database setup.
+- PayPal Sandbox configuration.
+- AI and MCP setup.
+- AG Grid configuration.
+- Testing instructions.
+- Sandbox demo instructions.
+- Architecture description.
+- Known limitations.
+- Screenshot/demo recording instructions.
+
+Never commit live credentials or secret API keys.
+
+The demonstration video must:
+- Be under three minutes.
+- Show the application functioning on its intended device/platform.
+- Demonstrate a real working end-to-end workflow.
+- Be uploaded to YouTube with public visibility.
+- Be linked in the submission.
+- Avoid unauthorized trademarks and copyrighted material, including music.
+
+Use original application branding and permitted assets. Do not imply official PayPal endorsement.
+
+## 14. EXECUTION WORKFLOW
+
+### Phase 1 — Inspect
+Inspect the current workspace, package versions, available database, and configuration.
+
+### Phase 2 — Establish the foundation
+Create the application architecture, database, migrations, configuration validation, and responsive navigation.
+
+### Phase 3 — Build the product
+Implement the five AI capabilities, shared assistant, validated tools, database-backed views, and accurate financial calculations.
+
+### Phase 4 — Integrate PayPal
+Set up Sandbox credentials, the supported MCP/Agent Toolkit integration, the buyer-approved checkout, server-side capture, and authoritative payment verification.
+
+### Phase 5 — Build analytics
+Integrate AG Grid Studio and its Agent Framework when access is configured. Otherwise, preserve a complete functional dashboard and document the missing dependency.
+
+### Phase 6 — Polish
+Finish all states, responsive layouts, interaction details, accessibility, errors, loading indicators, and empty states.
+
+### Phase 7 — Test
+Run the app, build, lint, type checks, unit tests, integration tests, and the complete Sandbox workflow where credentials permit.
+
+### Phase 8 — Handoff
+Provide an honest report with implemented features, verified integrations, tests passed, tests failed, configuration blockers, known limitations, and exact setup/run instructions.
+
+## FINAL ACCEPTANCE GATE
+
+The project is complete only when:
+
+- It runs in Replit.
+- The UI is coherent, polished, and responsive.
+- The five AI capabilities are meaningfully integrated.
+- Available transaction information is sourced correctly.
+- Financial calculations are deterministic.
+- PayPal Sandbox checkout works with valid credentials.
+- A buyer can approve checkout through the supported PayPal interface.
+- The backend captures and verifies the payment.
+- The correct intended merchant/receiving account is configured and verified.
+- AI cannot bypass the financial safety controls.
+- The dashboard reflects the appropriate resulting state.
+- Critical tests have been executed.
+- The repository and instructions are ready for judging.
+
+If something cannot be completed because credentials, permissions, or external account approval are unavailable, finish all possible implementation work and report that limitation precisely.
+
+Start by inspecting the current workspace and official documentation, then build the application. Do not stop at the planning phase. Deliver a tested, working hackathon product.

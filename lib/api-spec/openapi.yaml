@@ -1,0 +1,475 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: paypilot
+    description: PayPilot AI workspace operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /overview:
+    get:
+      operationId: getOverview
+      tags: [paypilot]
+      summary: Get the demo workspace overview
+      responses:
+        "200":
+          description: Overview and recent activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Overview"
+  /transactions:
+    get:
+      operationId: getTransactions
+      tags: [paypilot]
+      summary: Search and filter available transactions
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [completed, pending, failed]
+      responses:
+        "200":
+          description: Transactions in the demo workspace
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+  /transactions/{transactionId}:
+    get:
+      operationId: getTransaction
+      tags: [paypilot]
+      summary: Get one available transaction
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Transaction not found
+  /analytics/spending:
+    get:
+      operationId: getSpendingAnalytics
+      tags: [paypilot]
+      summary: Calculate deterministic spending and activity summaries
+      parameters:
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [week, month, quarter]
+            default: month
+      responses:
+        "200":
+          description: Spending summary and trend data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpendingAnalytics"
+  /catalog/products:
+    get:
+      operationId: getProducts
+      tags: [paypilot]
+      summary: List products in the PayPilot demo storefront
+      responses:
+        "200":
+          description: Curated demo catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+  /fx/estimate:
+    get:
+      operationId: getFxEstimate
+      tags: [paypilot]
+      summary: Estimate a currency conversion using a published exchange rate
+      parameters:
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 10000000
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^[A-Z]{3}$"
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^[A-Z]{3}$"
+      responses:
+        "200":
+          description: Indicative conversion estimate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxEstimate"
+        "502":
+          description: Exchange rate provider unavailable
+  /assistant:
+    post:
+      operationId: askAssistant
+      tags: [paypilot]
+      summary: Ask the PayPilot AI assistant about trusted workspace data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssistantRequest"
+      responses:
+        "200":
+          description: Assistant answer with its data scope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssistantResponse"
+        "400":
+          description: Invalid message
+  /settings/status:
+    get:
+      operationId: getIntegrationStatus
+      tags: [paypilot]
+      summary: Get integration readiness without exposing credentials
+      responses:
+        "200":
+          description: Readiness status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntegrationStatus"
+  /settings/paypal-check:
+    post:
+      operationId: checkPayPalSandbox
+      tags: [paypilot]
+      summary: Diagnose Sandbox credentials and merchant ID without exposing secrets
+      description: >
+        Verifies environment variables, OAuth, and the receiving merchant by creating a
+        throwaway Sandbox order that is never approved or captured. Returns masked
+        identifiers only. Rate limited to one run every five seconds.
+      responses:
+        "200":
+          description: Diagnostic result (ok is false when something needs attention)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayPalCheck"
+        "429":
+          description: The check was run too recently
+  /checkout/orders:
+    post:
+      operationId: createCheckoutOrder
+      tags: [paypilot]
+      summary: Prepare a catalog-priced checkout after user confirmation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutOrderInput"
+      responses:
+        "201":
+          description: Server-priced order prepared for PayPal Sandbox
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutOrder"
+        "400":
+          description: Product or quantity is invalid
+        "503":
+          description: PayPal Sandbox is not configured
+        "502":
+          description: PayPal Sandbox could not prepare an approval order
+  /checkout/orders/{orderId}:
+    get:
+      operationId: getCheckoutOrderStatus
+      tags: [paypilot]
+      summary: Refresh the persisted order state from PayPal Sandbox when configured
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Latest persisted state and any verified provider result
+        "404":
+          description: Order not found
+  /checkout/orders/{orderId}/cancel:
+    post:
+      operationId: cancelCheckoutOrder
+      tags: [paypilot]
+      summary: Persist that the buyer returned from approval without completing checkout
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Cancellation state saved; no payment was captured
+        "404":
+          description: Order not found
+        "409":
+          description: Order already has a verified capture
+  /checkout/orders/{orderId}/capture:
+    post:
+      operationId: captureCheckoutOrder
+      tags: [paypilot]
+      summary: Capture and verify a buyer-approved PayPal Sandbox order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutCaptureInput"
+      responses:
+        "200":
+          description: Authoritative capture result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutCapture"
+        "400":
+          description: Capture could not be verified
+        "404":
+          description: Order not found
+        "503":
+          description: PayPal Sandbox capture could not be verified
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Transaction:
+      type: object
+      required: [id, date, merchant, category, status, amountMinor, currency, source, description]
+      properties:
+        id: { type: string }
+        date: { type: string, format: date-time }
+        merchant: { type: string }
+        category: { type: string }
+        status: { type: string, enum: [completed, pending, failed] }
+        amountMinor: { type: integer }
+        currency: { type: string }
+        source: { type: string, enum: [seeded-demo, paypilot-order] }
+        description: { type: string }
+        reference: { type: ["string", "null"] }
+    ActivityPoint:
+      type: object
+      required: [label, receivedMinor, spentMinor]
+      properties:
+        label: { type: string }
+        receivedMinor: { type: integer }
+        spentMinor: { type: integer }
+    CategoryTotal:
+      type: object
+      required: [category, amountMinor, currency]
+      properties:
+        category: { type: string }
+        amountMinor: { type: integer }
+        currency: { type: string }
+    Overview:
+      type: object
+      required: [mode, sourceLabel, transactions, receivedThisMonthMinor, spentThisMonthMinor, monthlyChangePercent, activity]
+      properties:
+        mode: { type: string, enum: [sandbox-demo] }
+        sourceLabel: { type: string }
+        transactions:
+          type: array
+          items: { $ref: "#/components/schemas/Transaction" }
+        receivedThisMonthMinor: { type: integer }
+        spentThisMonthMinor: { type: integer }
+        monthlyChangePercent: { type: number }
+        activity:
+          type: array
+          items: { $ref: "#/components/schemas/ActivityPoint" }
+    SpendingAnalytics:
+      type: object
+      required: [period, currency, totalSpentMinor, priorPeriodSpentMinor, changePercent, categories, activity, sourceLabel]
+      properties:
+        period: { type: string }
+        currency: { type: string }
+        totalSpentMinor: { type: integer }
+        priorPeriodSpentMinor: { type: integer }
+        changePercent: { type: number }
+        sourceLabel: { type: string }
+        categories:
+          type: array
+          items: { $ref: "#/components/schemas/CategoryTotal" }
+        activity:
+          type: array
+          items: { $ref: "#/components/schemas/ActivityPoint" }
+    Product:
+      type: object
+      required: [id, name, category, description, priceMinor, currency, available, accent]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        category: { type: string }
+        description: { type: string }
+        priceMinor: { type: integer }
+        currency: { type: string }
+        available: { type: boolean }
+        accent: { type: string }
+    FxEstimate:
+      type: object
+      required: [amount, from, to, rate, convertedAmount, rateSource, timestamp, kind, feeNote]
+      properties:
+        amount: { type: number }
+        from: { type: string }
+        to: { type: string }
+        rate: { type: number }
+        convertedAmount: { type: number }
+        rateSource: { type: string }
+        timestamp: { type: string, format: date-time }
+        kind: { type: string, enum: [indicative] }
+        feeNote: { type: string }
+    AssistantRequest:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string, minLength: 1, maxLength: 2000 }
+        history:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            required: [role, content]
+            properties:
+              role: { type: string, enum: [user, assistant] }
+              content: { type: string, minLength: 1, maxLength: 2000 }
+    AssistantResponse:
+      type: object
+      required: [reply, mode, sources, products, transactions]
+      properties:
+        reply: { type: string }
+        mode: { type: string, enum: [openai, gemini, demo-fallback] }
+        sources:
+          type: array
+          items: { type: string }
+        products:
+          type: array
+          items: { $ref: "#/components/schemas/Product" }
+        transactions:
+          type: array
+          items: { $ref: "#/components/schemas/Transaction" }
+    IntegrationStatus:
+      type: object
+      required: [environment, aiConfigured, paypalConfigured, databaseConfigured, accountDataLabel]
+      properties:
+        environment: { type: string, enum: [sandbox-demo] }
+        aiConfigured: { type: boolean }
+        paypalConfigured: { type: boolean }
+        databaseConfigured: { type: boolean }
+        accountDataLabel: { type: string }
+    PayPalCheck:
+      type: object
+      required: [ok, code, message]
+      properties:
+        ok: { type: boolean }
+        code:
+          type: string
+          enum: [ok, not_configured, auth_failed, merchant_mismatch, merchant_unavailable, paypal_error, network_error]
+        message: { type: string }
+        missing:
+          type: array
+          description: Names of missing environment variables, never values
+          items: { type: string }
+        paypalStatus: { type: integer }
+        configuredMerchantHint: { type: string }
+        paypalMerchantHint: { type: string }
+    CheckoutOrderInput:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId: { type: string }
+        quantity: { type: integer, minimum: 1, maximum: 10 }
+    CheckoutOrder:
+      type: object
+      required: [id, productId, productName, quantity, amountMinor, currency, status, paypalOrderId, approveUrl]
+      properties:
+        id: { type: string }
+        productId: { type: string }
+        productName: { type: string }
+        quantity: { type: integer }
+        amountMinor: { type: integer }
+        currency: { type: string }
+        status: { type: string, enum: [prepared, approval-pending, completed, failed] }
+        paypalOrderId: { type: ["string", "null"] }
+        approveUrl: { type: ["string", "null"], format: uri }
+    CheckoutCaptureInput:
+      type: object
+      required: [paypalOrderId]
+      properties:
+        paypalOrderId: { type: string, minLength: 1 }
+    CheckoutCapture:
+      type: object
+      required: [orderId, paypalOrderId, status, amountMinor, currency, verified, transaction]
+      properties:
+        orderId: { type: string }
+        paypalOrderId: { type: string }
+        status: { type: string, enum: [completed, pending, failed] }
+        amountMinor: { type: integer }
+        currency: { type: string }
+        verified: { type: boolean }
+        transaction:
+          oneOf:
+            - $ref: "#/components/schemas/Transaction"
+            - type: "null"

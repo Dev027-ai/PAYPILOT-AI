@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "PayPilot AI"
+description = "A PayPal Sandbox payment intelligence workspace with a conversational assistant, transaction insights, a curated demo storefront, secure buyer-approved checkout, spending analytics, and transparent currency estimates."
+version = "1.0.0"
+id = "artifacts/paypilot-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23943
+
+[services.development]
+run = "pnpm --filter @workspace/paypilot-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/paypilot-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/paypilot-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23943"
+BASE_PATH = "/"
